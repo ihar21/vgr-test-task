@@ -1,0 +1,35 @@
+{
+    "transrip_section":{
+        "instructions": "Транскрибуй розмову повністю, розподіли по ролях, вказавши, хто говорить. Забезпеч правильне розставляння розділових знаків та великих літер. Мова транскрипції: українська.",
+        "output_key": "transcription"
+    },
+    "analysis_section":{
+        "questions":[
+            {
+                "id": 1,
+                "type": "date",
+                "question": "empty"
+            },
+            {
+                "id": 2,
+                "type": "type",
+                "question": "Напиши просто Консультація"
+            },
+            {
+                "id": 3,
+                "type": "telephone",
+                "question": "empty"
+            },
+            {
+                "id": 4,
+                "type": "filial",
+                "question": "empty"
+            },
+            {
+                "id": 5,
+                "type": "text",
+                "question": "Ім'я менеджера"
+            }
+        ]
+    }
+}
