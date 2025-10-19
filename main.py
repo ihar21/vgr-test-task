@@ -86,7 +86,7 @@ def copy_file(service, file_id, new_name, parent_id):
 def LLM_transcribe_and_analyze(client, audio_bytes, prompt):
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model= GENAI_MODEL,
             contents=[
                 prompt,
                 types.Part.from_bytes(
