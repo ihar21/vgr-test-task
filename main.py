@@ -1,7 +1,7 @@
 import os
 from google import genai
 from google.genai import types
-from config import TOKEN_FILE, CREDENTIALS_FILE, SCOPES, SOURCE_AUDIO_FOLDER_ID, DESTINATION_ROOT_FOLDER_ID, GENAI_API_KEY, GENAI_MODEL, MIME_TYPE
+from config import SOURCE_AUDIO_FOLDER_ID, DESTINATION_ROOT_FOLDER_ID, GENAI_API_KEY, GENAI_MODEL, MIME_TYPE
 from promts import PROMT
 from drive_manager import GoogleDriveManager
 
