@@ -24,11 +24,11 @@ def LLM_transcribe_and_analyze(client, audio_bytes, prompt):
 def main():
     manager = GoogleDriveManager()
     client_gen_ai = genai.Client(api_key=GENAI_API_KEY)
-    destination_audio_folder = manager.create_folder("records", DESTINATION_ROOT_FOLDER_ID)
+    destination_audio_folder = manager.create_folder("recordsv1", DESTINATION_ROOT_FOLDER_ID)
     list_audio_files = manager.list_files_in_folder(SOURCE_AUDIO_FOLDER_ID)
     for i in range(2):
         file = list_audio_files[i]
-        print(f"Found file: {file['name']} (ID: {file['id']})")
+        print(f"Found file: {file['name']} (ID: {file['id']}) Processing...")
         manager.copy_file(file['id'], file['name'], destination_audio_folder)
         audio_bytes = manager.download_audio_bytes(file['id'])
         transcription = LLM_transcribe_and_analyze(client_gen_ai, audio_bytes, PROMT)
