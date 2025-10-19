@@ -97,7 +97,7 @@ def LLM_transcribe_and_analyze(client, audio_bytes, prompt):
         )
         return response.text
     except Exception as e:
-        print(f"Произошла ошибка: {e}")
+        print(f"Error: {e}")
 
 def main():
     service = authenticate()
