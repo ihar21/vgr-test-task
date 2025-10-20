@@ -1,11 +1,13 @@
 import os
+import json
 from google import genai
 from google.genai import types
-from config import SOURCE_AUDIO_FOLDER_ID, DESTINATION_ROOT_FOLDER_ID, GENAI_API_KEY, GENAI_MODEL, MIME_TYPE
+from config import SOURCE_AUDIO_FOLDER_ID, SOURCE_ROOT_FOLDER_ID, DESTINATION_ROOT_FOLDER_ID, GENAI_API_KEY, GENAI_MODEL, MIME_TYPE
 from promts import PROMT
 from drive_manager import GoogleDriveManager
+import re
 
-def LLM_transcribe_and_analyze(client, audio_bytes, prompt):
+def LLM_transcribe_and_analyze(client, audio_bytes, prompt) -> dict:
     try:
         response = client.models.generate_content(
             model = GENAI_MODEL,
@@ -17,24 +19,35 @@ def LLM_transcribe_and_analyze(client, audio_bytes, prompt):
                 ),
             ],
         )
-        return response.text
+        text = re.sub(r"^```[a-zA-Z]*|```$", "", response.text.strip(), flags=re.MULTILINE).strip()
+        jdict=json.loads(text, strict=False)
+        return jdict
     except Exception as e:
         print(f"Error: {e}")
 
 def main():
-    #td
     manager = GoogleDriveManager()
     client_gen_ai = genai.Client(api_key=GENAI_API_KEY)
-    destination_audio_folder = manager.create_folder("recordsv1", DESTINATION_ROOT_FOLDER_ID)
+    destination_audio_folder = manager.create_folder("recordsv3", DESTINATION_ROOT_FOLDER_ID)
     list_audio_files = manager.list_files_in_folder(SOURCE_AUDIO_FOLDER_ID)
-    for i in range(2):
+    source_sheet = manager.find_sheet_in_folder(SOURCE_ROOT_FOLDER_ID)
+    sheet = manager.copy_file(source_sheet['id'], source_sheet['name'], DESTINATION_ROOT_FOLDER_ID)
+    manager.clear_sheet(sheet, "A3:T10")
+    cursor = 3
+    for i in range(1):
         file = list_audio_files[i]
         print(f"Found file: {file['name']} (ID: {file['id']}) Processing...")
         manager.copy_file(file['id'], file['name'], destination_audio_folder)
         audio_bytes = manager.download_audio_bytes(file['id'])
-        transcription = LLM_transcribe_and_analyze(client_gen_ai, audio_bytes, PROMT)
+        answer = LLM_transcribe_and_analyze(client_gen_ai, audio_bytes, PROMT)
+        transcription = answer.get("transcript_section").get("transcription")
+        questions = answer.get("analysis_section").get("questions")
+        answers = [q['answer'] for q in questions]
+        manager.sheet_append_values(sheet, f"A{cursor}", [answers])
+        cursor += 1
         new_name = os.path.splitext(file['name'])[0] + "_transcription.txt"
         manager.upload_bytes(new_name, transcription.encode('utf-8'), destination_audio_folder)
+    
 
 if __name__ == "__main__":
     main()

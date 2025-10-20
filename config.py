@@ -1,7 +1,9 @@
 #AUTHENTICATION
 TOKEN_FILE = "token.json"
 CREDENTIALS_FILE = "credentials.json"
-SCOPES = ['https://www.googleapis.com/auth/drive']
+SCOPES = [
+    'https://www.googleapis.com/auth/drive'
+    ,'https://www.googleapis.com/auth/spreadsheets']
 #FOLDERS ID
 SOURCE_ROOT_FOLDER_ID = "1R3hDscEc_Ujh1FytqWROg4tS__qcO1Ub"
 SOURCE_AUDIO_FOLDER_ID = "1dpKG-eaFg2glOovkI4sYgLyPo3mW9Ilg"
