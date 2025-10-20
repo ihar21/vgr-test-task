@@ -22,6 +22,7 @@ def LLM_transcribe_and_analyze(client, audio_bytes, prompt):
         print(f"Error: {e}")
 
 def main():
+    #threa
     manager = GoogleDriveManager()
     client_gen_ai = genai.Client(api_key=GENAI_API_KEY)
     destination_audio_folder = manager.create_folder("recordsv1", DESTINATION_ROOT_FOLDER_ID)
