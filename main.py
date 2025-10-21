@@ -38,19 +38,22 @@ def main():
     cursor = 3
     for i in range(len(list_audio_files)):
         file = list_audio_files[i]
+        #Download audio file
         print(f"Found file: {file['name']} (ID: {file['id']}) Processing...")
         manager.copy_file(file['id'], file['name'], destination_audio_folder)
         audio_bytes = manager.download_audio_bytes(file['id'])
+        #Get LLM answer
         answer = LLM_transcribe_and_analyze(client_gen_ai, audio_bytes, build_promt(file['name']))
         transcription = answer.get("transcript_section").get("transcription")
         questions = answer.get("analysis_section").get("questions")
         answers = [int(q['answer']) if (q['answer'] in ('1', '0') and i > 10) else q['answer'] for i, q in enumerate(questions)]
-        #print(answers)
         answers[0] = transcription
+        #Write to sheet
         if cursor !=3: manager.sheet_format(sheet, make_copy_request(3, cursor))
         if cursor !=3: manager.sheet_format(sheet, make_copy_request(3, cursor, paste_type="PASTE_FORMAT"))
         manager.sheet_append_values(sheet, f"A{cursor}", [answers])
         cursor += 1
+        #Upload transcription as txt file
         new_name = os.path.splitext(file['name'])[0] + "_transcription.txt"
         manager.upload_bytes(new_name, transcription.encode('utf-8'), destination_audio_folder)
     
