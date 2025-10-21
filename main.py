@@ -6,6 +6,7 @@ from config import SOURCE_AUDIO_FOLDER_ID, SOURCE_ROOT_FOLDER_ID, DESTINATION_RO
 from promts import PROMT
 from drive_manager import GoogleDriveManager
 import re
+from sheet_format_re import form_requests, make_copy_request
 
 def LLM_transcribe_and_analyze(client, audio_bytes, prompt) -> dict:
     try:
@@ -33,8 +34,9 @@ def main():
     source_sheet = manager.find_sheet_in_folder(SOURCE_ROOT_FOLDER_ID)
     sheet = manager.copy_file(source_sheet['id'], source_sheet['name'], DESTINATION_ROOT_FOLDER_ID)
     manager.clear_sheet(sheet, "A3:T10")
+    manager.sheet_format(sheet, form_requests)
     cursor = 3
-    for i in range(1):
+    for i in range(10):
         file = list_audio_files[i]
         print(f"Found file: {file['name']} (ID: {file['id']}) Processing...")
         manager.copy_file(file['id'], file['name'], destination_audio_folder)
@@ -43,6 +45,8 @@ def main():
         transcription = answer.get("transcript_section").get("transcription")
         questions = answer.get("analysis_section").get("questions")
         answers = [q['answer'] for q in questions]
+        answers[0] = transcription
+        manager.sheet_format(sheet, make_copy_request(3, cursor))
         manager.sheet_append_values(sheet, f"A{cursor}", [answers])
         cursor += 1
         new_name = os.path.splitext(file['name'])[0] + "_transcription.txt"

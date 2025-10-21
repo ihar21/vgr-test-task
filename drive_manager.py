@@ -10,9 +10,9 @@ from config import TOKEN_FILE, CREDENTIALS_FILE, SCOPES
 class GoogleDriveManager:
     
     def __init__(self):
-        self.service_drive = None
-        self.service_sheets = None
-        self._authenticate()
+        self.creds = self._authenticate()
+        self.service_drive = build('drive', 'v3', credentials=self.creds)
+        self.service_sheets = build('sheets', 'v4', credentials=self.creds)
 
     def _authenticate(self):
         creds = None
@@ -27,8 +27,7 @@ class GoogleDriveManager:
                 creds = flow.run_local_server(port=0)
             with open(TOKEN_FILE, "w") as token:
                 token.write(creds.to_json())
-        self.service_drive = build('drive', 'v3', credentials=creds)
-        self.service_sheets = build('sheets', 'v4', credentials=creds)  
+        return creds  
     
     def create_folder(self, name, parent_id=None):
         metadata = {
@@ -101,4 +100,12 @@ class GoogleDriveManager:
         }
         result = self.service_sheets.spreadsheets().values().append(
             spreadsheetId=sheet_id, range=range_name,
-            valueInputOption='RAW', body=body).execute()
+            valueInputOption='RAW', body=body).execute()  
+
+    def sheet_format(self, sheet_id, requests):     
+        body = {
+            'requests': requests
+        }
+        response = self.service_sheets.spreadsheets().batchUpdate(
+            spreadsheetId=sheet_id,
+            body=body).execute()
