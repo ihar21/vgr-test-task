@@ -3,7 +3,7 @@ import json
 from google import genai
 from google.genai import types
 from config import SOURCE_AUDIO_FOLDER_ID, SOURCE_ROOT_FOLDER_ID, DESTINATION_ROOT_FOLDER_ID, GENAI_API_KEY, GENAI_MODEL, MIME_TYPE
-from promts import PROMT
+from promts import build_promt
 from drive_manager import GoogleDriveManager
 import re
 from sheet_format_re import form_requests, make_copy_request
@@ -29,24 +29,26 @@ def LLM_transcribe_and_analyze(client, audio_bytes, prompt) -> dict:
 def main():
     manager = GoogleDriveManager()
     client_gen_ai = genai.Client(api_key=GENAI_API_KEY)
-    destination_audio_folder = manager.create_folder("recordsv3", DESTINATION_ROOT_FOLDER_ID)
+    destination_audio_folder = manager.create_folder("records", DESTINATION_ROOT_FOLDER_ID)
     list_audio_files = manager.list_files_in_folder(SOURCE_AUDIO_FOLDER_ID)
     source_sheet = manager.find_sheet_in_folder(SOURCE_ROOT_FOLDER_ID)
     sheet = manager.copy_file(source_sheet['id'], source_sheet['name'], DESTINATION_ROOT_FOLDER_ID)
-    manager.clear_sheet(sheet, "A3:T10")
+    manager.clear_sheet(sheet, "A3:T100")
     manager.sheet_format(sheet, form_requests)
     cursor = 3
-    for i in range(10):
+    for i in range(len(list_audio_files)):
         file = list_audio_files[i]
         print(f"Found file: {file['name']} (ID: {file['id']}) Processing...")
         manager.copy_file(file['id'], file['name'], destination_audio_folder)
         audio_bytes = manager.download_audio_bytes(file['id'])
-        answer = LLM_transcribe_and_analyze(client_gen_ai, audio_bytes, PROMT)
+        answer = LLM_transcribe_and_analyze(client_gen_ai, audio_bytes, build_promt(file['name']))
         transcription = answer.get("transcript_section").get("transcription")
         questions = answer.get("analysis_section").get("questions")
-        answers = [q['answer'] for q in questions]
+        answers = [int(q['answer']) if (q['answer'] in ('1', '0') and i > 10) else q['answer'] for i, q in enumerate(questions)]
+        #print(answers)
         answers[0] = transcription
-        manager.sheet_format(sheet, make_copy_request(3, cursor))
+        if cursor !=3: manager.sheet_format(sheet, make_copy_request(3, cursor))
+        if cursor !=3: manager.sheet_format(sheet, make_copy_request(3, cursor, paste_type="PASTE_FORMAT"))
         manager.sheet_append_values(sheet, f"A{cursor}", [answers])
         cursor += 1
         new_name = os.path.splitext(file['name'])[0] + "_transcription.txt"

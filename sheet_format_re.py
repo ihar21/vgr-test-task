@@ -43,9 +43,8 @@ form_requests = [rule_red, rule_green]
 def make_copy_request(
     from_row: int,
     to_row: int,
-    paste_type: str = "PASTE_FORMAT"
+    paste_type: str = "PASTE_DATA_VALIDATION"
 ) -> dict:
-    """Создаёт типизированный запрос для копирования форматирования строки."""
     req = {
         "copyPaste": {
             "source": {
