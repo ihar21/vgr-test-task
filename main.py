@@ -49,8 +49,9 @@ def main():
         answers = [int(q['answer']) if (q['answer'] in ('1', '0') and i > 10) else q['answer'] for i, q in enumerate(questions)]
         answers[0] = transcription
         #Write to sheet
-        if cursor !=3: manager.sheet_format(sheet, make_copy_request(3, cursor))
-        if cursor !=3: manager.sheet_format(sheet, make_copy_request(3, cursor, paste_type="PASTE_FORMAT"))
+        if cursor !=3: 
+            manager.sheet_format(sheet, make_copy_request(3, cursor))
+            manager.sheet_format(sheet, make_copy_request(3, cursor, paste_type="PASTE_FORMAT"))
         manager.sheet_append_values(sheet, f"A{cursor}", [answers])
         cursor += 1
         #Upload transcription as txt file
