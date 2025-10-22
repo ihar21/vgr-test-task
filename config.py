@@ -12,3 +12,8 @@ DESTINATION_ROOT_FOLDER_ID = "1PsjppOUaAbFqf4sjcZE8t1jyNaqJYfXV"
 GENAI_API_KEY = "YOUR_API_KEY_HERE"
 GENAI_MODEL = "gemini-2.5-flash"
 MIME_TYPE = "audio/mp3"
+#DRIVE
+DESTINATIO_AUDIO_FOLDER_NAME = "Records(Final)"
+#SHEET
+SHEET_NAME = "Звіт проослухованних розмов(Final)"
+HIDE_CONVERSATION_WITHOUT_NAME = False #В перепісці в телеграммі асистент сказав не вписувати записи де менеджер не називає свого ім'я. True - не вписувати, False - вписувати всі записи.
