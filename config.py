@@ -16,4 +16,4 @@ MIME_TYPE = "audio/mp3"
 DESTINATIO_AUDIO_FOLDER_NAME = "Records(Final)"
 #SHEET
 SHEET_NAME = "Звіт проослухованних розмов(Final)"
-HIDE_CONVERSATION_WITHOUT_NAME = False #В перепісці в телеграммі асистент сказав не вписувати записи де менеджер не називає свого ім'я. True - не вписувати, False - вписувати всі записи.
+HIDE_CONVERSATION_WITHOUT_NAME = False # Не вписувати записи де менеджер не називає свого ім'я. True - не вписувати, False - вписувати всі записи.
