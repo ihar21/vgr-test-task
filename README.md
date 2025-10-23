@@ -24,9 +24,12 @@
 2. **Опціонально** зробити ***віртуальне середовище***
 ```shell
 python -m venv venv
+```
+Активація venv 
+```shell
 venv/Scripts/activate
 ```
-Може знадобиться для активації vnv
+Може знадобиться для активації venv
 ```shell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
